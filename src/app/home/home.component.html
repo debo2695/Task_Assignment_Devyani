@@ -1,0 +1,196 @@
+<br>
+
+<div class="container border" *ngIf="!addDiv"><br>
+  <div class="row" *ngIf="!detailsDiv">
+    <div class="col-md-2">
+      <h5><em>Filters to apply!</em></h5>
+
+      <strong>Price</strong><br>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" #price id="price1" value="100"
+          (change)="priceClick(100, $event.target)" />
+        <label class="form-check-label"> 100 </label>
+      </div>
+      <br>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" #price id="price2" value="500"
+          (change)="priceClick(500, $event.target)" />
+        <label class="form-check-label"> 500 </label>
+      </div>
+      <br>
+
+      <strong>Stock</strong><br>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="flexRadioDefault" id="stock1" value="instock"
+          (change)="stockClick('instock', $event.target)" />
+        <label class="form-check-label"> In Stock </label>
+      </div>
+      <br>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="flexRadioDefault" id="stock2" value="outofstock"
+          (change)="stockClick('outofstock', $event.target)" />
+        <label class="form-check-label"> Out of Stock </label>
+      </div>
+      <br>
+
+      <div>
+        <button type="button" class="btn btn-success" (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+
+    </div>
+
+    <div class="col-md-10">
+      <div class="row">
+        <div class="col-md-4" *ngFor="let d of listdataService?.data | searchbyword : searchword">
+          <div class="card" style="width: 18rem">
+            <img [src]="d?.url" class="card-img-top pointer" alt="..." (click)="clickFunct(d)" />
+            <div class="card-body">
+              <h5 class="card-title pointer" (click)="clickFunct(d)">{{ d?.title }}</h5>
+              <p class="card-text pointer" (click)="clickFunct(d)">{{ d?.description }}</p>
+              <!-- <a class="btn btn-primary"><i class="bi bi-hand-thumbs-up"></i>&nbsp;&nbsp;Like</a> -->
+              <a class="btn btn-danger float-end" (click)="removeData(d)"><i
+                  class="bi bi-trash"></i>&nbsp;&nbsp;Remove</a>
+                  <!-- <em>check trash</em> -->
+            </div>
+          </div>
+          <br>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div *ngIf="detailsDiv">
+    <button class="btn btn-success" (click)="backFunct()">Back</button> <br><br>
+    <div class="row">
+      <div class="col-md-5 pointer">
+        <lib-ngx-image-zoom [thumbImage]=detailsData.url [fullImage]=detailsData.url [magnification]="2"
+          [enableScrollZoom]="true" [enableLens]="true" [lensWidth]="300"></lib-ngx-image-zoom>
+      </div>
+      <div class="col-md-7">
+        <div class="card border-0">
+          <div class="card-body">
+            <h3 class="card-title"><b>{{detailsData.title}}</b></h3>
+            <p class="card-text">{{detailsData.description}}</p>
+            <p><strong>Price - {{detailsData.price + ' rs'}}</strong></p>
+            <p><strong>Rating - {{detailsData.rating == '4' ? '****' : '*****'}}</strong></p>
+            <p><strong>Stock - {{detailsData.stock == 'instock' ? 'In Stock' : 'Out of Stock'}}</strong></p>
+            <p><strong>Location - {{detailsData.location }}</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="btn btn-primary float" style="margin-top: 15px;" (click)="addFunct()"><i
+      class="bi bi-plus-lg"></i></button>
+</div>
+
+<div class="container" *ngIf="addDiv">
+  <button class="btn btn-success" (click)="backFunctionForAdd()">Back</button>
+  <form style="margin-left: 200px;" [formGroup]="addProduct" (ngSubmit)="submitForm(addProduct.value)">
+
+    <div class="row">
+      <div class="col-md-6">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-control" formControlName="title" maxlength="50">&nbsp;
+        <div *ngIf="f['title'].invalid && (f['title'].touched || submitted)" class="alert alert-danger">
+          <div *ngIf="f['title'].errors && f['title'].errors['required']">Title is required.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" rows="3" formControlName="description" maxlength="150"></textarea>&nbsp;
+        <div *ngIf="f['description'].invalid && (f['description'].touched || submitted)" class="alert alert-danger">
+          <div *ngIf="f['description'].errors && f['description'].errors['required']">Description is required.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <label class="form-label">Image URL</label>
+        <input type="text" class="form-control" formControlName="url">&nbsp;
+        <div *ngIf="f['url'].invalid && (f['url'].touched || submitted)" class="alert alert-danger">
+          <div *ngIf="f['url'].errors && f['url'].errors['required']">Image URL is required.</div>
+          <div *ngIf="f['url'].errors && f['url'].errors['pattern']">Image URL pattern is invalid.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <label class="form-label">Price</label>
+        <input type="range" class="form-range" min="100" max="500" step="100" formControlName="price">&nbsp;
+        <div *ngIf="f['price'].invalid && (f['price'].touched || submitted)" class="alert alert-danger">
+          <div *ngIf="f['price'].errors && f['price'].errors['required']">Price is required.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 form-group">
+        <label class="form-label">Rating</label>
+        <input type="number" class="form-range" min="1" max="5" (keyup)="keyUp($event.target)" formControlName="rating"
+          class="form-control" [(ngModel)]="ratingClear">
+        <em>Rating is out of 5</em>&nbsp;
+        <div *ngIf="f['rating'].invalid && (f['rating'].touched || submitted)" class="alert alert-danger">
+          <div *ngIf="f['rating'].errors && f['rating'].errors['required']">Rating is required.</div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+    <div class="row">
+      <div class="col-md-6 pointer">
+        <div class="form-group">
+          <label class="form-label" for="locations">Location</label>
+          <br>
+          <select class="form-control" name="location" id="locations" formControlName="location">
+            <option value="Mumbai">Mumbai</option>
+            <option value="Delhi">Delhi</option>
+            <option value="Goa">Goa</option>
+            <option value="Punjab">Punjab</option>
+            <option value="Kerala">Kerala</option>
+            <option value="Karnataka">Karnataka</option>
+          </select>&nbsp;
+          <div *ngIf="f['location'].invalid && (f['location'].touched || submitted)" class="alert alert-danger">
+            <div *ngIf="f['location'].errors && f['location'].errors['required']">Location is required.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+    <div class="row">
+      <label>Stock</label>&nbsp;
+      <div class="col-md-6">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="stock" value="instock" checked>
+          <label class="form-check-label">
+            In stock
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" formControlName="stock" value="outofsock">
+          <label class="form-check-label">
+            Out of stock
+          </label>
+        </div>&nbsp;
+        <div *ngIf="f['stock'].invalid && (f['stock'].touched || submitted)" class="alert alert-danger">
+          <div *ngIf="f['stock'].errors && f['stock'].errors['required']">Stock is required.</div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+</div>
